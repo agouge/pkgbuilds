@@ -13,11 +13,12 @@ provides=(${pkgname%-dist})
 conflicts=(${pkgname%-dist})
 source=(http://www.orbisgis.org/store/releases/$pkgname-${pkgver//_/-}-bin.zip https://raw.github.com/irstv/orbisgis/master/Licenses/license-GPL.txt)
 noextract=($pkgname-${pkgver//_/-}-bin.zip)
-md5sums=('c75c1af95e5177734bf2fe2ba9b67e14'
+# We skip the integrity check for OrbisGIS since this is a daily snapshot
+md5sums=('SKIP'
          '921beec0ec9f776c0465b4374ef985d1')
 
 prepare() {
-
+    msg "WARNING: Skipping integrity check for $pkgname-${pkgver//_/-}-bin.zip"
     unzip $pkgname-${pkgver//_/-}-bin.zip
 }
 
