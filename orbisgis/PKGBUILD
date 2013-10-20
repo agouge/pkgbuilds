@@ -1,0 +1,43 @@
+# Maintainer: Adam Gouge < adam dot gouge at ec dash nantes dot fr >
+
+pkgname=orbisgis-dist
+pkgver=4.0_SNAPSHOT
+pkgrel=1
+pkgdesc='A Geographic Information System (GIS) for scientific spatial simulation (daily snapshot)'
+url='http://www.orbisgis.org/'
+arch=('i686' 'x86_64')
+license=('GPL3', 'custom')
+depends=('java-runtime')
+makedepends=('unzip')
+provides=(${pkgname%-dist})
+conflicts=(${pkgname%-dist})
+source=(http://www.orbisgis.org/store/releases/$pkgname-${pkgver//_/-}-bin.zip https://raw.github.com/irstv/orbisgis/master/Licenses/license-GPL.txt)
+noextract=($pkgname-${pkgver//_/-}-bin.zip)
+md5sums=('c75c1af95e5177734bf2fe2ba9b67e14'
+         '921beec0ec9f776c0465b4374ef985d1')
+
+prepare() {
+
+    unzip $pkgname-${pkgver//_/-}-bin.zip
+}
+
+package() {
+
+    cd $srcdir/$pkgname-${pkgver//_/-}
+    # Copy jars
+    mkdir -p $pkgdir/usr/share/java/$pkgname
+    cp -r bin bundle $pkgname-${pkgver//_/-}.jar $pkgdir/usr/share/java/$pkgname
+
+    cd $srcdir
+    # Create shell script
+    mkdir -p $pkgdir/usr/bin
+    script=${pkgname%-dist}.sh
+    echo "#!/bin/bash" > script
+    echo "$JAVA_HOME/bin/java -Xmx1024M -jar /usr/share/java/$pkgname/$pkgname-${pkgver//_/-}.jar $*" >> script
+    install -m755 script $pkgdir/usr/bin/${pkgname%-dist}
+
+    # Install license
+    msg "Copying license file."
+    mkdir -p $pkgdir/usr/share/licenses/$pkgname
+    cp license-GPL.txt $pkgdir/usr/share/licenses/$pkgname/LICENSE
+}
